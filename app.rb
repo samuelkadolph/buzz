@@ -23,7 +23,7 @@ class App < Sinatra::Application
   end
 
   post "/call" do
-    events = calendar.find_events_in_range(Time.now, Time.now + 1)
+    events = Array(google_calendar.find_events_in_range(Time.now.utc, Time.now.utc + 1))
 
     respond do |r|
       if events.any?
@@ -49,8 +49,8 @@ class App < Sinatra::Application
   end
 
   private
-  def calendar
-    @calendar ||= Google::Calendar.new(app_name: "buzz", calendar: settings.google_calendar, password: settings.google_password, username: settings.google_email)
+  def google_calendar
+    @google_calendar ||= Google::Calendar.new(app_name: "buzz", calendar: settings.google_calendar, password: settings.google_password, username: settings.google_email)
   end
 
   def respond(&block)
