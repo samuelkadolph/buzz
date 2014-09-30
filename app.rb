@@ -27,7 +27,7 @@ class App < Sinatra::Application
 
     respond do |r|
       if events.any?
-        r.Say("Goodbye")
+        r.Play("https://dq02iaaall1gx.cloudfront.net/dtmf_6.wav")
       else
         r.Dial(settings.phone_number, callerId: settings.twilio_number)
       end
