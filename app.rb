@@ -27,6 +27,8 @@ class App < Sinatra::Application
 
     respond do |r|
       if events.any?
+        logger.info("Event exists (\"#{events.first.title}\"), letting guest in!")
+        twilio.messages.create(from: settings.twilio_number, to: settings.phone_number, body: "Letting guest in!")
         r.Play("https://dq02iaaall1gx.cloudfront.net/dtmf_6.wav")
       else
         r.Dial(settings.phone_number, callerId: settings.twilio_number)
@@ -57,5 +59,9 @@ class App < Sinatra::Application
     status 200
     content_type "text/xml"
     body Twilio::TwiML::Response.new(&block).text
+  end
+
+  def twilio
+    @twilio ||= Twilio::REST::Client.new(settings.twilio_account_sid, settings.twilio_auth_token)
   end
 end
