@@ -4,50 +4,33 @@ require "sinatra/base"
 Bundler.require(:default, Sinatra::Base.environment)
 
 class App < Sinatra::Application
+  set :google_calendar, (ENV["GOOGLE_CALENDAR"] or raise "GOOGLE_CALENDAR must be set")
+  set :google_email, (ENV["GOOGLE_EMAIL"] or raise "GOOGLE_EMAIL must be set")
+  set :google_password, (ENV["GOOGLE_PASSWORD"] or raise "GOOGLE_PASSWORD must be set")
   set :phone_number, (ENV["PHONE_NUMBER"] or raise "PHONE_NUMBER must be set")
-  set :twilio_account_id, (ENV["TWILIO_ACCOUNT_SID"] or raise "TWILIO_NUMBER must be set")
-  set :twilio_auth_token, (ENV["TWILIO_AUTH_TOKEN"] or raise "TWILIO_NUMBER must be set")
+  set :twilio_account_sid, (ENV["TWILIO_ACCOUNT_SID"] or raise "TWILIO_ACCOUNT_SID must be set")
+  set :twilio_auth_token, (ENV["TWILIO_AUTH_TOKEN"] or raise "TWILIO_AUTH_TOKEN must be set")
   set :twilio_number, (ENV["TWILIO_NUMBER"] or raise "TWILIO_NUMBER must be set")
 
   before do
     logger.info("Parameters: #{params.inspect}")
   end
 
+  use Rack::TwilioWebhookAuthentication, settings.twilio_auth_token, "/call", "sms"
+
   get "/" do
-    "Nothing to see here."
+    "Nothing to see here"
   end
 
   post "/call" do
+    events = calendar.find_events_in_range(Time.now, Time.now + 1)
+
     respond do |r|
-      r.Dial(settings.phone_number, callerId: settings.twilio_number)
-      # r.Pause(length: 60)
-      # r.Say("No answer")
-    end
-
-    # call_sid = params["CallSid"]
-    # logger.info("CallSid: #{call_sid}")
-
-    # Thread.start do
-    #   logger.info("wtf")
-    #   sleep 5
-    #   logger.info("wtf")
-
-    #   client = Twilio::REST::Client.new(twilio_account_id, twilio_auth_token)
-    #   call = client.account.calls.get(call_sid)
-    #   logger.info("here?")
-    #   logger.info(call.inspect)
-    #   call.update(method: "POST", url: "https://samuelkadolph-buzz.herokuapp.com/connect")
-    # end
-  end
-
-  post "/connect" do
-    respond do |r|
-      r.Say("IT WORKS!!")
-    end
-  end
-
-  post "/done" do
-    respond do |r|
+      if events.any?
+        r.Say("Goodbye")
+      else
+        r.Dial(settings.phone_number, callerId: settings.twilio_number)
+      end
     end
   end
 
@@ -66,9 +49,9 @@ class App < Sinatra::Application
   end
 
   private
-  # def client
-  #   @client ||= Twilio::REST::Client.new(twilio_account_id, twilio_auth_token)
-  # end
+  def calendar
+    @calendar ||= Google::Calendar.new(app_name: "buzz", calendar: settings.google_calendar, password: settings.google_password, username: settings.google_email)
+  end
 
   def respond(&block)
     status 200
