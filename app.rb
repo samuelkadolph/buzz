@@ -45,7 +45,7 @@ class App < Sinatra::Application
       response = "Unlocked for #{$1} hours"
     when /\Aunlock(?: (\d+)m)?\Z/i
       minutes = $1 || "30"
-      response = "Unlocked for #{mintues} minutes"
+      response = "Unlocked for #{minutes} minutes"
     else
       response = "Unrecognized command"
     end
