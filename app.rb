@@ -16,7 +16,7 @@ class App < Sinatra::Application
     logger.info("Parameters: #{params.inspect}")
   end
 
-  use Rack::TwilioWebhookAuthentication, settings.twilio_auth_token, "/call", "sms"
+  use Rack::TwilioWebhookAuthentication, settings.twilio_auth_token, "/call", "/sms"
 
   get "/" do
     "Nothing to see here"
@@ -31,6 +31,7 @@ class App < Sinatra::Application
         twilio.messages.create(from: settings.twilio_number, to: settings.phone_number, body: "Letting guest in!")
         r.Play("https://dq02iaaall1gx.cloudfront.net/dtmf_6.wav")
       else
+        logger.info("No event exists, calling #{settings.phone_number}")
         r.Dial(settings.phone_number, callerId: settings.twilio_number)
       end
     end
@@ -38,9 +39,13 @@ class App < Sinatra::Application
 
   post "/sms" do
     case params["Body"]
-    when /\A\Z/
-    when /\Ahelp\Z/
+    when /\Ahelp\Z/i
       response = "<Insert help here>"
+    when /\Aunlock (\d+)h\Z/i
+      response = "Unlocked for #{$1} hours"
+    when /\Aunlock(?: (\d+)m)?\Z/i
+      minutes = $1 || "30"
+      response = "Unlocked for #{mintues} minutes"
     else
       response = "Unrecognized command"
     end
