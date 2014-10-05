@@ -27,12 +27,9 @@ class App < Sinatra::Application
 
     respond do |r|
       if events.any?
-        logger.info("Event exists (\"#{events.first.title}\"), letting guest in!")
-        twilio.messages.create(from: settings.twilio_number, to: settings.phone_number, body: "Letting guest in!")
-        r.Play("https://dq02iaaall1gx.cloudfront.net/dtmf_6.wav")
+        unlock_door(r)
       else
-        logger.info("No event exists, calling #{settings.phone_number}")
-        r.Dial(settings.phone_number, callerId: settings.twilio_number)
+        forward_to_phone(r)
       end
     end
   end
@@ -40,12 +37,26 @@ class App < Sinatra::Application
   post "/sms" do
     case params["Body"]
     when /\Ahelp\Z/i
-      response = "<Insert help here>"
+      response = <<-HELP
+Help - print this message
+Unlock - add unlock block for 30 minutes
+Unlock NNm - add unlock block for NN minutes
+Unlock NNh - add unlock block for NN hours
+      HELP
     when /\Aunlock (\d+)h\Z/i
-      response = "Unlocked for #{$1} hours"
+      if add_unlock_block($1.to_i * 60)
+        response = "Unlocked for #{$1} hours"
+      else
+        response = "Failed to add unlock"
+      end
     when /\Aunlock(?: (\d+)m)?\Z/i
-      minutes = $1 || "30"
-      response = "Unlocked for #{minutes} minutes"
+      minutes = ($1 || "30").to_i
+
+      if add_unlock_block(minutes)
+        response = "Unlocked for #{minutes} minutes"
+      else
+        response = "Failed to add unlock"
+      end
     else
       response = "Unrecognized command"
     end
@@ -56,6 +67,24 @@ class App < Sinatra::Application
   end
 
   private
+  def add_unlock_block(minutes)
+    event = google_calendar.create_event
+    event.title = "Allow Guests In"
+    event.start_time = Time.now
+    event.end_time = Time.now + minutes * 60
+    event.save
+    true
+  rescue => e
+    logger.error("#{e} (#{e.class})")
+    false
+  end
+
+  def forward_to_phone(response)
+    logger.info("No event exists, calling #{settings.phone_number}")
+
+    response.Dial(settings.phone_number, callerId: settings.twilio_number)
+  end
+
   def google_calendar
     @google_calendar ||= Google::Calendar.new(app_name: "buzz", calendar: settings.google_calendar, password: settings.google_password, username: settings.google_email)
   end
@@ -68,5 +97,13 @@ class App < Sinatra::Application
 
   def twilio
     @twilio ||= Twilio::REST::Client.new(settings.twilio_account_sid, settings.twilio_auth_token)
+  end
+
+  def unlock_door(response)
+    logger.info("Event exists (\"#{events.first.title}\"), letting guest in!")
+
+    twilio.messages.create(from: settings.twilio_number, to: settings.phone_number, body: "Letting guest in!")
+
+    response.Play("https://dq02iaaall1gx.cloudfront.net/dtmf_6.wav")
   end
 end
