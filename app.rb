@@ -23,10 +23,8 @@ class App < Sinatra::Application
   end
 
   post "/call" do
-    events = Array(google_calendar.find_events_in_range(Time.now.utc, Time.now.utc + 1))
-
     respond do |r|
-      if events.any?
+      if active_blocks.any?
         unlock_door(r)
       else
         forward_to_phone(r)
@@ -39,17 +37,25 @@ class App < Sinatra::Application
     when /\Ahelp\Z/i
       response = <<-HELP
 Help - print this message
+Lock - remove any active unlock blocks
 Unlock - add unlock block for 30 minutes
 Unlock NNm - add unlock block for NN minutes
 Unlock NNh - add unlock block for NN hours
       HELP
-    when /\Aunlock (\d+)h\Z/i
+    when /\Alock\Z/i
+      if (blocks = active_blocks).any?
+        blocks.each(&:delete)
+        response = "Deleted active unlock blocks"
+      else
+        response = "No active unlock blocks"
+      end
+    when /\Aunlock (\d+) ?(?:h|hours))\Z/i
       if add_unlock_block($1.to_i * 60)
         response = "Unlocked for #{$1} hours"
       else
         response = "Failed to add unlock"
       end
-    when /\Aunlock(?: (\d+)m)?\Z/i
+    when /\Aunlock(?: (\d+) ?(?:m|minutes))?\Z/i
       minutes = ($1 || "30").to_i
 
       if add_unlock_block(minutes)
@@ -67,6 +73,10 @@ Unlock NNh - add unlock block for NN hours
   end
 
   private
+  def active_blocks
+    Array(google_calendar.find_events_in_range(Time.now.utc, Time.now.utc + 1))
+  end
+
   def add_unlock_block(minutes)
     event = google_calendar.create_event
     event.title = "Allow Guests In"
