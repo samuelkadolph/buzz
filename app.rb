@@ -55,7 +55,7 @@ Unlock NNh - add unlock block for NN hours
       else
         response = "Failed to add unlock"
       end
-    when /\Aunlock(?: (\d+) ?(?:m|minutes))?\Z/i
+    when /\Aunlock(?: (\d+) ?(?:m|minutes)))?\Z/i
       minutes = ($1 || "30").to_i
 
       if add_unlock_block(minutes)
