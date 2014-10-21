@@ -24,8 +24,8 @@ class App < Sinatra::Application
 
   post "/call" do
     respond do |r|
-      if active_blocks.any?
-        unlock_door(r)
+      if (blocks = active_blocks).any?
+        unlock_door(r, blocks)
       else
         forward_to_phone(r)
       end
@@ -109,8 +109,8 @@ Unlock NNh - add unlock block for NN hours
     @twilio ||= Twilio::REST::Client.new(settings.twilio_account_sid, settings.twilio_auth_token)
   end
 
-  def unlock_door(response)
-    logger.info("Event exists (\"#{events.first.title}\"), letting guest in!")
+  def unlock_door(response, blocks)
+    logger.info("Event exists (\"#{blocks.first.title}\"), letting guest in!")
 
     twilio.messages.create(from: settings.twilio_number, to: settings.phone_number, body: "Letting guest in!")
 
