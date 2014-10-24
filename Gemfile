@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "2.1.2"
+ruby "2.1.3"
 
 gem "google_calendar", "~> 0.3.1"
 gem "sinatra", "~> 1.4.5", require: "sinatra/base"
