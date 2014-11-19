@@ -5,8 +5,9 @@ Bundler.require(:default, Sinatra::Base.environment)
 
 class App < Sinatra::Application
   set :google_calendar, (ENV["GOOGLE_CALENDAR"] or raise "GOOGLE_CALENDAR must be set")
-  set :google_email, (ENV["GOOGLE_EMAIL"] or raise "GOOGLE_EMAIL must be set")
-  set :google_password, (ENV["GOOGLE_PASSWORD"] or raise "GOOGLE_PASSWORD must be set")
+  set :google_client_id, (ENV["GOOGLE_CLIENT_ID"] or raise "GOOGLE_CLIENT_ID must be set")
+  set :google_client_secret, (ENV["GOOGLE_CLIENT_SECRET"] or raise "GOOGLE_CLIENT_SECRET must be set")
+  set :google_refresh_token, (ENV["GOOGLE_REFRESH_TOKEN"] or raise "GOOGLE_REFRESH_TOKEN must be set")
   set :phone_number, (ENV["PHONE_NUMBER"] or raise "PHONE_NUMBER must be set")
   set :twilio_account_sid, (ENV["TWILIO_ACCOUNT_SID"] or raise "TWILIO_ACCOUNT_SID must be set")
   set :twilio_auth_token, (ENV["TWILIO_AUTH_TOKEN"] or raise "TWILIO_AUTH_TOKEN must be set")
@@ -96,7 +97,7 @@ Unlock NNh - add unlock block for NN hours
   end
 
   def google_calendar
-    @google_calendar ||= Google::Calendar.new(app_name: "buzz", calendar: settings.google_calendar, password: settings.google_password, username: settings.google_email)
+    @google_calendar ||= Google::Calendar.new(calendar: settings.google_calendar, client_id: settings.google_client_id, client_secret: settings.google_client_secret, refresh_token: settings.google_refresh_token)
   end
 
   def respond(&block)
