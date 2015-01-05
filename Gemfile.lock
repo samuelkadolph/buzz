@@ -1,12 +1,11 @@
 GIT
   remote: https://github.com/northworld/google_calendar
-  revision: 0d206203c94e28b8c2cc416339f45f3ffc6d45db
-  ref: 0d206203c94e28b8c2cc416339f45f3ffc6d45db
-  branch: api-v3
+  revision: 8836d15dd584a3bcacf5c9b7258d5f7043fbd08a
+  ref: 8836d15dd584a3bcacf5c9b7258d5f7043fbd08a
   specs:
-    google_calendar (0.4.0)
-      addressable (>= 2.2.2)
-      signet (>= 0.5.1)
+    google_calendar (0.4.4)
+      json (~> 1.8)
+      signet (~> 0.6)
 
 GEM
   remote: https://rubygems.org/
@@ -16,11 +15,13 @@ GEM
     dotenv (0.11.1)
       dotenv-deployment (~> 0.0.2)
     dotenv-deployment (0.0.2)
+    extlib (0.9.16)
     faraday (0.9.0)
       multipart-post (>= 1.2, < 3)
     foreman (0.74.0)
       dotenv (~> 0.11.1)
       thor (~> 0.19.1)
+    json (1.8.1)
     jwt (1.0.0)
     kgio (2.9.2)
     multi_json (1.10.1)
@@ -29,11 +30,12 @@ GEM
     rack-protection (1.5.3)
       rack
     raindrops (0.13.0)
-    signet (0.5.1)
-      addressable (>= 2.2.3)
-      faraday (>= 0.9.0.rc5)
-      jwt (>= 0.1.5)
-      multi_json (>= 1.0.0)
+    signet (0.6.0)
+      addressable (~> 2.3)
+      extlib (~> 0.9)
+      faraday (~> 0.9)
+      jwt (~> 1.0)
+      multi_json (~> 1.10)
     sinatra (1.4.5)
       rack (~> 1.4)
       rack-protection (~> 1.4)
