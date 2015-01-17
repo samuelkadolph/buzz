@@ -117,7 +117,6 @@ Unlock NNh - add unlock block for NN hours
 
     response.Say("Unlocking")
     response.Play("https://dq02iaaall1gx.cloudfront.net/dtmf_6.wav")
-    response.Say("Goodbye")
     response.Hangup
   end
 end
