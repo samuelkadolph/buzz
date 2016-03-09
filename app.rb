@@ -115,8 +115,7 @@ Unlock NNh - add unlock block for NN hours
 
     twilio.messages.create(from: settings.twilio_number, to: settings.phone_number, body: "Letting guest in!")
 
-    response.Say("Unlocking")
-    response.Play("https://dq02iaaall1gx.cloudfront.net/dtmf_6.wav")
-    response.Hangup
+    response.Play("https://dq02iaaall1gx.cloudfront.net/buzz.wav")
+    # response.Hangup
   end
 end

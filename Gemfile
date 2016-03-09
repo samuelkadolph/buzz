@@ -1,8 +1,8 @@
 source "https://rubygems.org"
 
-ruby "2.1.3"
+ruby "2.3.0"
 
-gem "google_calendar", git: "https://github.com/northworld/google_calendar", ref: "8836d15dd584a3bcacf5c9b7258d5f7043fbd08a"
+gem "google_calendar"
 gem "sinatra", "~> 1.4.5", require: "sinatra/base"
 gem "twilio-ruby", "~> 3.13.0"
 gem "unicorn", "~> 4.8.3"

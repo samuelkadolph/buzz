@@ -1,27 +1,26 @@
-GIT
-  remote: https://github.com/northworld/google_calendar
-  revision: 8836d15dd584a3bcacf5c9b7258d5f7043fbd08a
-  ref: 8836d15dd584a3bcacf5c9b7258d5f7043fbd08a
-  specs:
-    google_calendar (0.4.4)
-      json (~> 1.8)
-      signet (~> 0.6)
-
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.3.6)
+    TimezoneParser (0.2.0)
+      insensitive_hash
+      tzinfo
+    addressable (2.4.0)
     builder (3.2.2)
     dotenv (0.11.1)
       dotenv-deployment (~> 0.0.2)
     dotenv-deployment (0.0.2)
     extlib (0.9.16)
-    faraday (0.9.0)
+    faraday (0.9.2)
       multipart-post (>= 1.2, < 3)
     foreman (0.74.0)
       dotenv (~> 0.11.1)
       thor (~> 0.19.1)
-    json (1.8.1)
+    google_calendar (0.5.1)
+      TimezoneParser (~> 0.2.0)
+      json (~> 1.8)
+      signet (~> 0.6)
+    insensitive_hash (0.3.3)
+    json (1.8.3)
     jwt (1.0.0)
     kgio (2.9.2)
     multi_json (1.10.1)
@@ -41,11 +40,14 @@ GEM
       rack-protection (~> 1.4)
       tilt (~> 1.3, >= 1.3.4)
     thor (0.19.1)
+    thread_safe (0.3.5)
     tilt (1.4.1)
     twilio-ruby (3.13.0)
       builder (>= 2.1.2)
       jwt (~> 1.0.0)
       multi_json (>= 1.3.0)
+    tzinfo (1.2.2)
+      thread_safe (~> 0.1)
     unicorn (4.8.3)
       kgio (~> 2.6)
       rack
@@ -56,7 +58,10 @@ PLATFORMS
 
 DEPENDENCIES
   foreman (~> 0.74.0)
-  google_calendar!
+  google_calendar
   sinatra (~> 1.4.5)
   twilio-ruby (~> 3.13.0)
   unicorn (~> 4.8.3)
+
+BUNDLED WITH
+   1.11.2
