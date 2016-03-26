@@ -79,11 +79,14 @@ Unlock NNh - add unlock block for NN hours
   end
 
   def add_unlock_block(minutes)
-    event = google_calendar.create_event
-    event.title = "Allow Guests In"
-    event.start_time = Time.now
-    event.end_time = Time.now + minutes * 60
-    event.save
+    event = google_calendar.create_event do |e|
+      e.title = "Allow Guests In"
+      e.start_time = Time.now
+      e.end_time = Time.now + minutes * 60
+    end
+
+    logger.info("Created event #{event}")
+
     true
   rescue => e
     logger.error("#{e} (#{e.class})")
@@ -116,6 +119,5 @@ Unlock NNh - add unlock block for NN hours
     twilio.messages.create(from: settings.twilio_number, to: settings.phone_number, body: "Letting guest in!")
 
     response.Play("https://dq02iaaall1gx.cloudfront.net/buzz.wav")
-    # response.Hangup
   end
 end
