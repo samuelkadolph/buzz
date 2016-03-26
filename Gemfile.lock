@@ -24,6 +24,7 @@ GEM
     rack-protection (1.5.3)
       rack
     raindrops (0.16.0)
+    rake (10.5.0)
     signet (0.7.2)
       addressable (~> 2.3)
       faraday (~> 0.9)
@@ -53,6 +54,7 @@ PLATFORMS
 DEPENDENCIES
   foreman
   google_calendar
+  rake
   sinatra
   twilio-ruby
   unicorn
